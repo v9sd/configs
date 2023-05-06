@@ -1,3 +1,25 @@
+"MIT License
+
+"Copyright (c) 2023 v9sd
+
+"Permission is hereby granted, free of charge, to any person obtaining a copy
+"of this software and associated documentation files (the \"Software\"), to deal
+"in the Software without restriction, including without limitation the rights
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+"copies of the Software, and to permit persons to whom the Software is
+"furnished to do so, subject to the following conditions:
+
+"The above copyright notice and this permission notice shall be included in all
+"copies or substantial portions of the Software.
+
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+"SOFTWARE.
+
 set encoding=utf-8
 
 set nocompatible
@@ -22,6 +44,11 @@ call vundle#begin()
   Plugin 'cdelledonne/vim-cmake'
   "https://github.com/thinca/vim-localrc"
   Plugin 'thinca/vim-localrc'
+  "https://github.com/kien/ctrlp.vim"
+  Plugin 'kien/ctrlp.vim'
+  "https://codeberg.org/Timoses/vim-venu"
+  "Plugin 'Timoses/vim-venu'
+  Plugin 'https://codeberg.org/timoses/vim-venu.git'
 
 call vundle#end()
 filetype plugin indent on
@@ -36,10 +63,10 @@ augroup END
 
 syntax on
 
-packadd termdebug
-
-hi debugPC term=reverse ctermbg=darkblue guibg=darkblue
-hi debugBreakpoint term=reverse ctermbg=red guibg=red
+"termdebug
+  packadd termdebug
+  hi debugPC term=reverse ctermbg=darkblue guibg=darkblue
+  hi debugBreakpoint term=reverse ctermbg=red guibg=red
 
 " plugin NERDTree
   nnoremap <leader>n :NERDTreeFocus<CR>
@@ -77,23 +104,41 @@ hi debugBreakpoint term=reverse ctermbg=red guibg=red
   set shiftwidth=2
 
 " ycm
-  let g:ycm_clangd_args = ['-log=verbose', '-pretty']
+  "let g:ycm_clangd_args = ['-log=verbose', '-pretty']
   " Let clangd fully control code completion
-  let g:ycm_clangd_uses_ycmd_caching = 0
+  " let g:ycm_clangd_uses_ycmd_caching = 1
   " " Use installed clangd, not YCM-bundled clangd which doesn't get updates.
-  let g:ycm_clangd_binary_path = exepath("clangd")
+  let g:ycm_clangd_binary_path = exepath("clangd-15")
 
   let g:ycm_neovim_ns_id = -1
   let g:ycm_show_diagnostics_ui = 0
   let g:ycm_log_level = 'debug'
-  let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
-  let g:ycm_confirm_extra_conf = 0
+  " let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+  " let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
+  " let g:ycm_confirm_extra_conf = 0
+  " noremap <leader>gdf :YcmCompleter\ GoToDefinition<cr>
+  " noremap <leader>gdc :YcmCompleter\ GoToDeClaration<cr>
+  " noremap <leader>gi :YcmCompleter\ GoToInclude<cr>
+  " noremap <leader>gs :YcmCompleter\ GoToSymbol<cr>
+  " noremap <leader>gt :YcmCompleter\ GoToType<cr>
+  " noremap <leader>gr :YcmCompleter\ GoToReferences<cr>
+  let s:ycm_menu= venu#create('YcmCompleter')
+  call venu#addItem(s:ycm_menu, 'GoToDeclaration', ':YcmCompleter GoToDeclaration')
+  call venu#addItem(s:ycm_menu, 'GoToDefinition', ':YcmCompleter GoToDefinition')
+  call venu#addItem(s:ycm_menu, 'GoToReferences', ':YcmCompleter GoToReferences')
+  call venu#register(s:ycm_menu)
+  nmap ym :VenuPrint<cr>
    
 " cmake
   let build_dir_name = fnamemodify(getcwd(), ':t') 
   let g:cmake_build_dir_location = '../'.build_dir_name.'-build'
-  let g:cmake_generate_options = ['-DCMAKE_EXPORT_COMPILE_COMMANDS=ON']
+  let g:cmake_generate_options = ['-DCMAKE_EXPORT_COMPILE_COMMANDS:Bool=ON']
+  let g:cmake_root_markers = ["CMakeLists.txt"]
   let g:cmake_default_config = "Debug"
 
 "local wimrc
   call localrc#load('.local.vimrc', getcwd())
+
+"theme
+  set cursorline
+  hi CursorLine term=bold cterm=bold guibg=Grey40
